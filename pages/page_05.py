@@ -1,12 +1,15 @@
 import streamlit as st
 import requests
 from PIL import Image
-from models.model import predict
+#from models.model import predict
 from io import BytesIO
 import cv2
 import numpy as np
+import ultralytics
+from ultralytics import YOLO
 
-st.title("🔍 YOLO11: Детекция объектов")
+
+st.title("🔍 YOLO11: Детекция ветрогенераторов")
 st.write("🖼 Загрузите изображение или вставьте ссылку для детекции объектов.")
 
 st.divider()
@@ -19,6 +22,13 @@ conf = st.slider("🎯 Укажите confidence:", 0.0, 1.0, value=None)
 
 st.divider()
 
+
+
+def predict(img, conf):
+    model = YOLO('models/best-5.pt')
+    results = model(img, conf=conf)
+    return results
+
 if file_1:
     st.subheader('🔍 Результаты:')
     img = Image.open(file_1)
@@ -27,6 +37,7 @@ if file_1:
         with cols[0]:
             st.image(img, caption='Загруженное изображение:')
         with cols[1]:
+            
             img_cv2 = np.array(img)
             img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
             results = predict(img_cv2, conf)

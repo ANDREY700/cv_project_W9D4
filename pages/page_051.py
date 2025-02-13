@@ -1,5 +1,6 @@
 import streamlit as st
 
+st.header("Детекция ветрогенераторов")
 st.title("ℹ️ YOLO11: Информация")
 
 st.divider()
