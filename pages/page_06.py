@@ -1,167 +1,100 @@
-# ELBRUSE Bootcamp 
-# 13-02-2025
-# Week 9 Day 4 Project
-# team: Dasha, Alina, Ilya, Andrey 
-
-
-
 import streamlit as st
-import pandas as pd
-import torch 
-import time
 import requests
-import datetime
 from PIL import Image
-from torchvision import transforms
-import os
+#from models.model import predict
 from io import BytesIO
-
-def get_prediction(image, model):
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)), # Изменение размера изображения
-        transforms.ToTensor() # Преобразование в тензор
-    ])
-    input_tensor = transform(image)
-    with torch.inference_mode():
-        pred_class = torch.argmax(model(input_tensor.unsqueeze(0).to('cpu'))).item()
-    return pred_class
-
-def load_image_from_url(url):
-    response = requests.get(url, stream=True)
-    response.raise_for_status()  # Проверяем, что запрос успешен
-    image = Image.open(BytesIO(response.content)).convert("RGB") # Указываем RGB
-    return image
+import cv2
+import numpy as np
+import ultralytics
+from ultralytics import YOLO
 
 
-try:
-    #st.write('Загрука файла модели спортивной фотографии')
-    #with st.spinner("Загрузка... ", show_time=True):
-    #    await asyncio.sleep(0.5)
-    #    time.sleed(5)
+st.header("Модель YOLO11: Семантическая детекция ветрогенераторов")
+st.write("🖼 Загрузите изображение или вставьте ссылку для детекции объектов.")
+
+st.divider()
+st.subheader('Вариант 1 : загрузка одной фотографии')
+file_1 = st.file_uploader("📥 Загрузите **одно** изображение", type=["jpg", "jpeg", "png"])
+st.subheader('Вариант 2 : загрузка нескольких фотографий')
+file_2 = st.file_uploader("📂 Загрузите **несколько** изображений", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+st.subheader('Вариант 3 : загрузка фотографии через ссылку ')
+url_pic = st.text_input('🌐 Вставьте ссылку на изображение', 'https://assets.bwbx.io/images/users/iqjWHBFdfxIU/i_pOg_X0zn_g/v1/-1x-1.jpg')  
+
+
+st.divider()
+st.subheader('Параметры работы модели: ')
+conf = st.slider("🎯 Укажите confidence:", 0.0, 1.0, value=0.25)
+
+st.divider()
+
+def predict(img, conf):
+    model = YOLO('models/bestA1.pt')    
+    results = model(img, conf=conf)
+    return results
+
+if file_1:
+    st.subheader('🔍 Результаты:')
+    img = Image.open(file_1)
+    cols = st.columns(2)
+    if conf:
+        with cols[0]:
+            st.image(img, caption='Загруженное изображение:')
+        with cols[1]:
+            
+            img_cv2 = np.array(img)
+            img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
+            results = predict(img_cv2, conf)
+            result_img = results[0].plot()
+            result_pil = Image.fromarray(cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB))
+
+            st.image(result_pil, caption="Результаты детекции:")
+
+
+if file_2:
+    st.subheader('🔍 Результаты:')
+    cols = st.columns(2)  # Два столбца для показа изображений
+    images = []
+    captions = []
     
-    model_sport = torch.load('model_sport.pth', weights_only=False, map_location='cpu')
-except:
-    st.write('Ошибка загрузки файла модели спортивной фотографии')
-else:
+    for i, pic in enumerate(file_2):
+        img = Image.open(pic)
+        images.append(img)
+        captions.append(f"Загруженное изображение {i+1}")
+
+    with cols[0]:
+        st.image(images, caption=captions)
+
+    if conf:
+        processed_images = []
+        
+        for img in images:
+            img_cv2 = np.array(img)
+            img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
+            results = predict(img_cv2, conf)
+            result_img = results[0].plot()
+            result_pil = Image.fromarray(cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB))
+            processed_images.append(result_pil)
+
+        with cols[1]:
+            st.image(processed_images, caption=["Детектированное изображение " + str(i+1) for i in range(len(images))])
+
+if url_pic:
+    st.subheader('🔍 Результаты:')
     try:
-        
-        model_blood = torch.load('model_eff3_blood.pth', weights_only=False, map_location='cpu')
-    except:
-        st.write('Ошибка загрузки файла модели клеток крови')
-    else:
-        try:
-            blood_labels = pd.read_csv('data_labels_blood.csv')
-            sport_labels = pd.read_csv('data_labels_sport.csv')
-        except:
-            st.write('Ошибка загрузки одного из файлов модели')
-        else:       
-        
-            st.write('Статус загрузки моделей: ')
-            st.write('* файл модели клеток крови загружен успешно')
-            st.write('* файла модели спортивной фотографии загружен успешно')
+        response = requests.get(url_pic)
+        img = Image.open(BytesIO(response.content))
+        if conf:
+            cols = st.columns(2)
+            with cols[0]:
+                st.image(img, caption="Загруженное изображение")
+            with cols[1]:
+                img_cv2 = np.array(img)
+                img_cv2 = cv2.cvtColor(img_cv2, cv2.COLOR_RGB2BGR)
+                results = predict(img_cv2, conf)
+                result_img = results[0].plot()
+                result_pil = Image.fromarray(cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB))
 
-            st.title('Модель классификации фотографии')
+                st.image(result_pil, caption="Результаты детекции")
 
-            st.write(' ')
-            MODELS_SET = ['Модель классификации типа спорта', 'Модель классификации клетки крови']
-            sel_model = st.selectbox('Выберите одну из моделей для работы', MODELS_SET) 
-           # if st.button('Использовать', type='primary'):
-            if sel_model == MODELS_SET[0]:
-                model = model_sport
-                labels = sport_labels
-            else:
-                model = model_blood
-                labels = blood_labels
-
-
-            st.write(' ')
-            st.subheader('Вариант 1 : загрузка фотографии')
-            file1 = st.file_uploader("Загрузить файл", type= ['jpg'])  
-            if file1 is not None:
-                try:
-                    data01 = Image.open(file1)
-                except:
-                    st.write('Возникли проблемы с загрузкой файла!')
-                else:
-                    st.write('Файл загружен успешно')
-                    st.image(data01, width=250)
-                    st.write('Обработка файла:')
-                    start = datetime.datetime.now()
-                    #st.code('Время старта: ' + str(start))
-                    result = get_prediction(data01, model)
-                    #st.write(result)
-                    #result = 5
-                    #st.dataframe(labels)
-                    #фиксируем и выводим время окончания работы кода
-                    finish = datetime.datetime.now()
-                    #st.code('Время окончания: ' + str(finish))
-
-                    # вычитаем время старта из времени окончания
-                    st.code('Время работы модели, секунд : ' + str((finish - start).total_seconds()))
-                    st.code('Модель определила фото как класс "'+str(result) + '" и "' + labels.iloc[result, 0] + '"')
-
-            
-            st.write(' ')
-            st.subheader('Вариант 2 : загрузка по ссылке')
-            link1 = st.text_input('', 'https://cdn.britannica.com/87/237587-050-8A4B9F08/Shohei-Ohtani-Los-Angeles-Angels-pitcher-baseball-player-2022.jpg')  
-            st.write('PS: проверка корректности введенной ссылки не производится!')
-            if st.button('Запустить', type='primary'):
-                try:
-                    data01 = load_image_from_url(link1)
-                    #data01 = requests.get(link1).content
-                    #data01 = Image.open(img_data)
-                except:
-                    st.write('Возникли проблемы с загрузкой файла!')
-                else:
-                    st.write('Файл загружен успешно')
-                    st.image(data01)
-                    st.write('Обработка файла:')
-                    start = datetime.datetime.now()
-                    #st.code('Время старта: ' + str(start))
-                    result = get_prediction(data01, model)
-                    #st.write(result)
-                    #result = 5
-                    #st.dataframe(labels)
-                    #фиксируем и выводим время окончания работы кода
-                    finish = datetime.datetime.now()
-                    #st.code('Время окончания: ' + str(finish))
-
-                    # вычитаем время старта из времени окончания
-                    st.code('Время работы модели, секунд : ' + str((finish - start).total_seconds()))
-                    st.code('Модель определила фото как класс "'+str(result) + '" и "' + labels.iloc[result, 0] + '"')
-
-            
-                
-                
-
-
-
-            st.write(' ')
-            st.subheader('Вариант 3 : обработка пакета файлов')
-            st.write(' ')
-            file3= st.file_uploader("Загрузить файл", type= ['jpg'], accept_multiple_files=True)  
-            if file3 is not None:
-                for file1 in file3:
-                    try:
-                        data01 = Image.open(file1)
-                    except:
-                        st.write('Возникли проблемы с загрузкой файла!')
-                    else:
-                        st.write('Файл загружен успешно')
-                        st.image(data01, width=250)
-                        st.write('Обработка файла:')
-                        start = datetime.datetime.now()
-                        #st.code('Время старта: ' + str(start))
-                        result = get_prediction(data01, model)
-                        #st.write(result)
-                        #result = 5
-                        #st.dataframe(labels)
-                        #фиксируем и выводим время окончания работы кода
-                        finish = datetime.datetime.now()
-                        #st.code('Время окончания: ' + str(finish))
-
-                        # вычитаем время старта из времени окончания
-                        st.code('Время работы модели, секунд : ' + str((finish - start).total_seconds()))
-                        st.code('Модель определила фото как класс "'+str(result) + '" и "' + labels.iloc[result, 0] + '"')
-
-
+    except Exception as e:
+        st.error(f"❌ Ошибка загрузки изображения: {e}")

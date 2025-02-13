@@ -25,7 +25,7 @@ page041 = st.Page("pages/page_041.py", title = '- Описание модели'
 page05 = st.Page("pages/page_05.py", title = '3. Детекция ветрогенераторов')
 page051 = st.Page("pages/page_051.py", title = ' - Описание модели')
 
-page06 = st.Page("pages/page_06.py", title = '4. Семантическая детекция ветрогенераторов')
+page06 = st.Page("pages/page_06.py", title = '4. Семантическая детекция ветрогенераторов (YOLO)')
 page061 = st.Page("pages/page_061.py", title = '- Описание модели')
 
 pg = st.navigation([page01, page02, 

@@ -25,7 +25,7 @@ with col1:
 with col2:
     st.page_link("pages/page_04.py", label='* Сегментация аэрокосмических снимков')
 with col3:
-    st.page_link("pages/page_04.py", label='Описание модели')
+    st.page_link("pages/page_041.py", label='Описание модели')
 
 col1, col2, col3 = st.columns(spec=[0.1, 0.6, 0.3])
 with col1:
@@ -40,7 +40,7 @@ col1, col2, col3 = st.columns(spec=[0.1, 0.6, 0.3])
 with col1:
     st.image('images/windTur_seg01.PNG', width=50)
 with col2:
-    st.page_link("pages/page_06.py", label='* Семантическая детекция ветрогенераторов')
+    st.page_link("pages/page_06.py", label='* Семантическая детекция ветрогенераторов (YOLO)')
 with col3:
-    st.page_link("pages/page_03.py", label='Описание модели')
+    st.page_link("pages/page_061.py", label='Описание модели (YOLO)')
 
