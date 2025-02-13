@@ -29,6 +29,7 @@ with col1:
     st.image('images/windTur01.PNG', width=50)
 with col2:
     st.page_link("pages/page_05.py", label='* Детекция ветрогенераторов')
+    st.page_link("pages/page_051.py", label='* Описание модели')
 
 col1, col2 = st.columns(spec=[0.1, 0.9])
 with col1:
