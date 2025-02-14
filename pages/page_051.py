@@ -22,27 +22,27 @@ st.header("📈 Метрики модели")
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("📉 F1-score")
-    st.image('models/F1_curve.png')
+    st.image('images/F1_curve_I.png')
 with col2:
     st.subheader("📉 PR-кривая")
-    st.image('models/PR_curve.png')
+    st.image('images/PR_curve_I.png')
 
 st.subheader("📊 Precision & Recall")
 col1, col2 = st.columns(2)
 with col1:
-    st.image('models/P_curve.png', caption="📈 Precision")
+    st.image('images/P_curve_I.png', caption="📈 Precision")
 with col2:
-    st.image('models/R_curve.png', caption="📉 Recall")
+    st.image('images/R_curve_I.png', caption="📉 Recall")
 
 st.subheader("📊 Confusion Matrix")
 col1, col2 = st.columns(2)
 with col1:
-    st.image('models/confusion_matrix_normalized.png', caption="✅ Нормализованная версия")
+    st.image('images/confusion_matrix_normalized_I.png', caption="✅ Нормализованная версия")
 with col2:
-    st.image('models/confusion_matrix.png', caption="🔎 Базовая версия")
+    st.image('images/confusion_matrix_I.png', caption="🔎 Базовая версия")
 
 st.divider()
 
 st.header("🖼 Примеры из обучения модели")
-st.image('models/val_batch0_labels.jpg', caption='✅ Истинные значения')
-st.image('models/val_batch0_pred.jpg', caption='🤖 Предсказанные значения')
+st.image('images/val_batch0_labels_I.jpg', caption='✅ Истинные значения')
+st.image('images/val_batch0_pred_I.jpg', caption='🤖 Предсказанные значения')
