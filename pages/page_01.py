@@ -15,7 +15,7 @@ col1, col2, col3 = st.columns(spec=[0.2, 0.6, 0.2])
 with col1:
     st.image('images/Face_detection.PNG', width=100)
 with col2:
-    st.page_link("pages/page_03.py", label='* Детекция лиц с модулем ....')
+    st.page_link("pages/page_03.py", label='* Детекция лиц (YOLO)')
 with col3:
     st.page_link("pages/page_031.py", label='Описание модели')
 

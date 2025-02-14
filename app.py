@@ -16,7 +16,7 @@ import pandas as pd
 page01 = st.Page("pages/page_01.py", title = 'Оглавление')
 page02 = st.Page("pages/page_02.py", title = 'Описание поставленной задачи')
 
-page03 = st.Page("pages/page_03.py", title = '1. Детекция лиц')
+page03 = st.Page("pages/page_03.py", title = '1. Детекция лиц (YOLO)')
 page031 = st.Page("pages/page_031.py", title = '* Описание модели')
 
 page04 = st.Page("pages/page_04.py", title = '2a. Сегментация аэрокосм. снимков (UNET)')
