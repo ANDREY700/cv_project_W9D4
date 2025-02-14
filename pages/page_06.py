@@ -23,7 +23,7 @@ url_pic = st.text_input('🌐 Вставьте ссылку на изображ�
 
 st.divider()
 st.subheader('Параметры работы модели: ')
-conf = st.slider("🎯 Укажите confidence:", 0.0, 1.0, value=0.25)
+conf = st.slider("🎯 Укажите confidence:", 0.001, 1.0, value=0.25)
 
 st.divider()
 
